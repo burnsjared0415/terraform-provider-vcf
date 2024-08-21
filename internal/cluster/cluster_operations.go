@@ -390,9 +390,7 @@ func ImportCluster(ctx context.Context, data *schema.ResourceData, apiClient *cl
 		WithTimeout(constants.DefaultVcfApiCallTimeout)
 	getClusterParams.ID = clusterId
 	clusterResult, err := apiClient.Clusters.GetCluster(getClusterParams)
-	if err != nil {
-		return nil, err
-	}
+
 	clusterObj := clusterResult.Payload
 
 	data.SetId(clusterObj.ID)
@@ -402,6 +400,9 @@ func ImportCluster(ctx context.Context, data *schema.ResourceData, apiClient *cl
 	_ = data.Set("is_default", clusterObj.IsDefault)
 	_ = data.Set("is_stretched", clusterObj.IsStretched)
 	flattenedVdsSpecs := getFlattenedVdsSpecsForRefs(clusterObj.VdsSpecs)
+	if err != nil {
+		return nil, err
+	}
 	_ = data.Set("vds", flattenedVdsSpecs)
 
 	flattenedHostSpecs, err := getFlattenedHostSpecsForRefs(ctx, clusterObj.Hosts, apiClient)
