@@ -391,6 +391,9 @@ func ImportCluster(ctx context.Context, data *schema.ResourceData, apiClient *cl
 		WithTimeout(constants.DefaultVcfApiCallTimeout)
 	getClusterParams.ID = clusterId
 	clusterResult, err := apiClient.Clusters.GetCluster(getClusterParams)
+	if err != nil {
+		return nil, err
+	}
 
 	clusterObj := clusterResult.Payload
 
@@ -404,6 +407,9 @@ func ImportCluster(ctx context.Context, data *schema.ResourceData, apiClient *cl
 	_ = data.Set("vds", flattenedVdsSpecs)
 
 	flattenedHostSpecs, err := getFlattenedHostSpecsForRefs(ctx, clusterObj.Hosts, apiClient)
+	if err != nil {
+		return nil, err
+	}
 	_ = data.Set("host", flattenedHostSpecs)
 
 	//get all domains and find our cluster to set the "domain_id" attribute, because
